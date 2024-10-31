@@ -1,2 +1,35 @@
 server:
   port: 9010
+spring:
+  # quartz
+  quartz:
+    properties:
+      org:
+        quartz:
+          scheduler:
+            instanceId: AUTO
+            instanceName: schedulerFactory
+            wrapJobExecutionInUserTransaction: false
+            rmi:
+              export: false
+              proxy: false
+          # 实例化ThreadPool时，使用的线程类为SimpleThreadPool
+          threadPool:
+            class: org.quartz.simpl.SimpleThreadPool
+            #并发个数
+            threadCount: 15
+            # 优先级
+            threadPriority: 5
+            threadsInheritContextClassLoaderOfInitializingThread: true
+          jobStore:
+            #最大能忍受的触发超时时间
+            misfireThreshold: 180000
+            #持久化
+            class: org.springframework.scheduling.quartz.LocalDataSourceJobStore
+            driverDelegateClass: org.quartz.impl.jdbcjobstore.StdJDBCDelegate
+            tablePrefix: qrtz_
+            isClustered: false
+            clusterCheckinInterval: 180000
+    job-store-type: jdbc
+    jdbc:
+      initialize-schema: never
