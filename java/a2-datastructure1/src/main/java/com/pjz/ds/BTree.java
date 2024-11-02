@@ -85,6 +85,42 @@ public class BTree {
         return i;
     }
 
+    public void insertBTree(BTreeNode node, int i, int k) {
+        int finished = 0;
+        int needNewRoot = 0;
+        //根结点不存在，构建根节点
+        if (this.root == null) {
+            this.root = new BTreeNode();
+        } else {
+            BTreeNode newNode = null;
+            while (needNewRoot == 0 && finished == 0) {
+                insert(node, i, k, newNode);
+                if (node.keynum<this.m){
+                    //插入合法
+                    finished=1;
+                }else {
+                    //当前结点关键字数目达到上限,分裂当前结点
+                    
+                }
+            }
+        }
+    }
+
+    private void insert(BTreeNode node, int i, int k, BTreeNode newNode) {
+        for (int j = node.keynum; j >= i; j--) {
+            //关键字后移，腾出i位置
+            node.key[j + 1] = node.key[j];
+            node.children[j + 1] = node.children[j];
+        }
+        //向当前结点的i位置插入关键字和子结点
+        node.key[i] = k;
+        node.children[i] = newNode;
+        if (newNode != null) {
+            newNode.parent = node;
+        }
+        node.keynum++;
+    }
+
 //    public static void main(String[] args) {
 //        BTree bTree = new BTree(2);
 //        bTree.insertKey(1);
