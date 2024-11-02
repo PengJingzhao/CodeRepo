@@ -49,23 +49,32 @@ public class BTree {
 //        }
     }
 
-    public void searchBTree(int k) {
+    public Result searchBTree(int k) {
         int i = 0;
         int found = 0;
+        Result result = null;
         BTreeNode node = this.root;
-        BTreeNode parent;
+        BTreeNode parent = null;
         while (node != null && found == 0) {
+            //在当前结点中查找k的位序
             i = search(node, k);
             if (i <= node.keynum && node.key[i] == k) {
+                //成功找到
                 found = 1;
             } else {
+                //没找到，就到下一层子结点去找
                 parent = node;
                 node = node.children[i - 1];
             }
         }
-        if (found==1){
-
+        if (found == 1) {
+            //找到就返回当前结点
+            result = new Result(node, i, found);
+        } else {
+            //没找到就返回父结点的插入位序
+            result = new Result(parent, i, found);
         }
+        return result;
     }
 
     private int search(BTreeNode node, int k) {
