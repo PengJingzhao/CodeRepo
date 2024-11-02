@@ -1,35 +1,47 @@
 server:
   port: 9010
 spring:
-  # quartz
+  # Quartz 的配置，对应 QuartzProperties 配置类
   quartz:
-    properties:
+    job-store-type: memory # Job 存储器类型。默认为 memory 表示内存，可选 jdbc 使用数据库。
+    auto-startup: true # Quartz 是否自动启动
+    startup-delay: 0 # 延迟 N 秒启动
+    wait-for-jobs-to-complete-on-shutdown: true # 应用关闭时，是否等待定时任务执行完成。默认为 false ，建议设置为 true
+    overwrite-existing-jobs: false # 是否覆盖已有 Job 的配置
+    properties: # 添加 Quartz Scheduler 附加属性
       org:
         quartz:
-          scheduler:
-            instanceId: AUTO
-            instanceName: schedulerFactory
-            wrapJobExecutionInUserTransaction: false
-            rmi:
-              export: false
-              proxy: false
-          # 实例化ThreadPool时，使用的线程类为SimpleThreadPool
           threadPool:
-            class: org.quartz.simpl.SimpleThreadPool
-            #并发个数
-            threadCount: 15
-            # 优先级
-            threadPriority: 5
-            threadsInheritContextClassLoaderOfInitializingThread: true
-          jobStore:
-            #最大能忍受的触发超时时间
-            misfireThreshold: 180000
-            #持久化
-            class: org.springframework.scheduling.quartz.LocalDataSourceJobStore
-            driverDelegateClass: org.quartz.impl.jdbcjobstore.StdJDBCDelegate
-            tablePrefix: qrtz_
-            isClustered: false
-            clusterCheckinInterval: 180000
-    job-store-type: jdbc
-    jdbc:
-      initialize-schema: never
+            threadCount: 25 # 线程池大小。默认为 10 。
+            threadPriority: 5 # 线程优先级
+            class: org.quartz.simpl.SimpleThreadPool # 线程池类型
+  #    jdbc: # 这里暂时不说明，使用 JDBC 的 JobStore 的时候，才需要配置
+  datasource:
+    druid:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      url: jdbc:mysql:///1-learn-system?useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+      username: root
+      password: 2048711712P!
+      initial-size: 10
+      max-active: 60
+      min-idle: 5
+      filters: mergeStat,log4j
+      filter:
+        stat:
+          log-slow-sql: true
+          slow-sql-millis: 5000
+        log4j:
+          enabled: true
+      stat-view-servlet:
+        login-username: root
+        login-password: 2048711712P!
+        enabled: true
+        allow:
+        deny:
+      test-while-idle: true
+      test-on-borrow: true
+      remove-abandoned: false
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
+      socket-timeout: 300000
+      connect-timeout: 300000
