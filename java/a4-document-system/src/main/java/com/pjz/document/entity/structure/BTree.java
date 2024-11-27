@@ -79,6 +79,7 @@ public class BTree {
         if (parent == null) {
             parent = new Node(t);
             parent.isLeaf = false;
+            parent.insertChild(cur, 0);
             root = parent;
         }
         //创建当前结点的右兄弟节点,并且将当前结点的一半关键字复制到兄弟节点中
@@ -94,9 +95,122 @@ public class BTree {
                 cur.children[i] = null;
             }
         }
+        cur.keyNum = t - 1;
         //更新父节点
         parent.insertKey(cur.keys[t - 1], index);
         parent.insertChild(rightBro, index + 1);
+    }
+
+    /**
+     * 删除指定关键字key
+     *
+     * @param key 要删除的关键字
+     */
+    public void delete(int key) {
+        doDelete(null, root, 0, key);
+    }
+
+    /**
+     * 删除关键字key
+     *
+     * @param parent 当前结点的父节点
+     * @param cur    当前结点
+     * @param index  用于记录目标位置的基准位置
+     * @param key    要删除的关键字
+     */
+    private void doDelete(Node parent, Node cur, int index, int key) {
+        //首先要获取指定元素
+        int i = 0;
+        while (i < cur.keyNum && cur.keys[i] < key) {
+            i++;
+        }
+
+        if (cur.isLeaf) {
+            if (cur.keys[i] == key) {
+                //叶子节点,并且已经匹配上，直接删除
+                cur.removeKey(i);
+            } else {
+                //到达了叶子结点，但是仍旧没找到，结束查找
+                return;
+            }
+        } else {
+            //非叶子节点
+            if (cur.keys[i] == key) {
+                //在非叶子结点处匹配成功
+                //找到后驱节点并交换位置
+                Node child = cur.children[i + 1];
+                while (!child.isLeaf) {
+                    child = child.children[0];
+                }
+                int nextKey = child.keys[0];
+                cur.keys[i] = nextKey;
+                doDelete(cur, child, i + 1, nextKey);
+            } else {
+                //非叶子结点处未匹配，继续向下查找
+                doDelete(cur, cur.children[i], i, key);
+            }
+        }
+        //判断是否需要合并结点
+        if (cur.keyNum < t - 1) {
+            //当前节点的节点数不足，需要借用其他结点的关键字或者合并两个节点
+            balance(parent, cur, index);
+        }
+    }
+
+    /**
+     * 调整B树
+     *
+     * @param parent 父结点
+     * @param cur    被调整节点
+     * @param index  被调整节点在父结点中的孩子数组下标
+     */
+    private void balance(Node parent, Node cur, int index) {
+        if (cur == root) {
+            if (cur.keyNum == 0 && cur.children[0] != null) {
+                root = cur.children[0];
+            }
+            return;
+        }
+        //通过在index两边的子节点之间迁移关键字来将关键字数量维持在合理范围内
+        Node leftChild = parent.leftSibling(index);
+        Node rightChild = parent.rightSibling(index);
+        //向左兄弟借关键字
+        if (leftChild != null && leftChild.keyNum > t - 1) {
+            //将父结点中的key赋值给cur
+            cur.insertKey(parent.keys[index - 1], 0);
+            if (!leftChild.isLeaf) {
+                //如果左侧孩子不是一个叶子节点，在旋转过后，会导致keysNumber+1！=children。
+                //因此将多出来的孩子赋值更多出来一个key的被调整节点
+                cur.insertChild(leftChild.removeRightmostChild(), 0);
+            }
+            //将左孩子中最右侧元素赋值给父结点
+            parent.keys[index - 1] = leftChild.removeRightmostKey();
+            return;
+        }
+        //向右兄弟借关键字
+        if (rightChild != null && rightChild.keyNum > t) {
+            cur.insertKey(parent.keys[index], cur.keyNum);
+            if (!rightChild.isLeaf) {
+
+                cur.insertChild(rightChild.removeLeftmostChild(), cur.keyNum);
+            }
+            parent.keys[index] = rightChild.removeLeftmostKey();
+            return;
+        }
+        //合并
+        //如果删除节点存在左兄弟，向左合并
+        if (leftChild != null) {
+            //将被删除节点从父结点上移除
+            parent.removeChild(index);
+            //将父结点的被移除节点的前驱节点移动到左兄弟上
+            leftChild.insertKey(parent.removeKey(index - 1), leftChild.keyNum);
+            cur.moveToTarget(leftChild);
+        } else {
+            //如果没有左兄弟，那么移除右兄弟节点，并将右兄弟移动到被删除节点上。
+            parent.removeChild(index + 1);
+            cur.insertKey(parent.removeKey(index), cur.keyNum);
+            rightChild.moveToTarget(cur);
+        }
     }
 
     static class Node {
@@ -156,6 +270,98 @@ public class BTree {
             System.arraycopy(children, index, children, index + 1, keyNum - index);
             children[index] = child;
         }
+
+        /**
+         * 删除指定位置的关键字
+         *
+         * @param index 指定位置
+         * @return 被移除的关键字
+         */
+        int removeKey(int index) {
+            int key = keys[index];
+            System.arraycopy(keys, index + 1, keys, index, (keyNum - 1) - index);
+//            keys[keyNum] = -1000;
+            keyNum--;
+            return key;
+        }
+
+
+        /**
+         * 获取指定位置的左孩子节点
+         *
+         * @param index 指定的位置
+         * @return 返回相应的左孩子结点
+         */
+        Node leftSibling(int index) {
+            if (index <= 0) {
+                return null;
+            }
+            return children[index - 1];
+        }
+
+
+        /**
+         * 获取指定位置的右孩子节点
+         *
+         * @param index 获取指定位置的右孩子结点
+         * @return 返回相应的右孩子结点
+         */
+        Node rightSibling(int index) {
+            if (index == keyNum) {
+                return null;
+            }
+            return children[index + 1];
+        }
+
+
+        /**
+         * 移除当前节点最左边的关键字
+         *
+         * @return 返回被移除的关键字
+         */
+        int removeLeftmostKey() {
+            return removeKey(0);
+        }
+
+        //移除最右边的元素
+        int removeRightmostKey() {
+            return removeKey(keyNum - 1);
+        }
+
+        //移除指定位置的孩子节点
+        Node removeChild(int index) {
+            //获取被移除的节点
+            Node t = children[index];
+            //将被移除节点的后面元素向前移动一位
+            System.arraycopy(children, index + 1, children, index, keyNum - index);
+            //将之前最后一位的引用释放
+            children[keyNum] = null;
+            //返回被引用元素
+            return t;
+        }
+
+        //移除最左边的孩子节点
+        Node removeLeftmostChild() {
+            return removeChild(0);
+        }
+
+        //移除最右边的孩子节点
+        Node removeRightmostChild() {
+            return removeChild(keyNum);
+        }
+
+        //移动指定节点到目标节点
+        void moveToTarget(Node target) {
+            int start = target.keyNum;
+            if (!isLeaf) {
+                for (int i = 0; i <= keyNum; i++) {
+                    target.children[start + i] = children[i];
+                }
+            }
+            for (int i = 0; i < keyNum; i++) {
+                target.keys[target.keyNum++] = keys[i];
+            }
+        }
     }
 
     public void show() {
@@ -167,7 +373,11 @@ public class BTree {
      */
     public void doShow(Node cur) {
         //打印当前结点
-        System.out.println(Arrays.toString(cur.keys)+"\n");
+        for (int i = 0; i < cur.keyNum; i++) {
+            System.out.print(cur.keys[i]);
+            System.out.print(" ");
+        }
+        System.out.println("\n");
         //遍历子结点
         if (cur.isLeaf) {
             return;

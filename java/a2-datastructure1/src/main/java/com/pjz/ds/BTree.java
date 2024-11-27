@@ -333,16 +333,12 @@ public class BTree {
 
     public static void main(String[] args) {
         BTree tree = new BTree(3);
-        int[] keys = {10, 20, 5, 6, 12, 30, 7, 17};
-        for (int key : keys) {
-            tree.put(key);
+        for (int i = 0; i < 100; i++) {
+            tree.put(i);
         }
-        Node r = tree.root;
-        System.out.println(r);
-        for (Node child : r.children) {
-            System.out.println(child);
+        for (int i = 0; i < 100; i++) {
+            tree.remove(i);
         }
-        System.out.println(tree);
     }
 
 }
