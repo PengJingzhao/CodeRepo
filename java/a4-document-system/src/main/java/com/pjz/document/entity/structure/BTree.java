@@ -365,13 +365,17 @@ public class BTree {
     }
 
     public void show() {
-        doShow(root);
+        doShow(root, 0);
     }
 
     /**
      * 遍历打印b树
      */
-    public void doShow(Node cur) {
+    public void doShow(Node cur, int cnt) {
+        for (int i = 0; i < cnt; i++) {
+            //下一层
+            System.out.print("\t");
+        }
         //打印当前结点
         for (int i = 0; i < cur.keyNum; i++) {
             System.out.print(cur.keys[i]);
@@ -382,11 +386,8 @@ public class BTree {
         if (cur.isLeaf) {
             return;
         }
-        for (Node child : cur.children) {
-            if (child == null) {
-                continue;
-            }
-            doShow(child);
+        for (int i = 0; i <= cur.keyNum; i++) {
+            doShow(cur.children[i], cnt + 1);
         }
 
     }
