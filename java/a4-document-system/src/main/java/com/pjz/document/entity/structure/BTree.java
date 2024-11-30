@@ -21,10 +21,23 @@ public class BTree<K extends Integer, V> {
      */
     private Node root;
 
+    /**
+     * 每个结点最多存储的关键字个数
+     */
+    private final Integer MAX_KEY_NUMS;
+
+    /**
+     * 每个结点最少要存储的关键字个数
+     */
+    private final Integer MIN_KEY_NUMS;
+
     public BTree(int m) {
         this.m = m;
         this.t = m / 2;
-        this.root = new Node(t);
+        this.root = new Node(m);
+        this.MAX_KEY_NUMS = m - 1;
+        //最小关键字数应该是对m/2-1向上取整
+        this.MIN_KEY_NUMS = (int) Math.ceil((float) m / 2 - 1);
     }
 
     /**
@@ -63,7 +76,7 @@ public class BTree<K extends Integer, V> {
             doInsert(cur, cur.children[i], i, key, val);
         }
         //在当前节点插入后还要判断关键字个数是否已经达到上限
-        if (cur.keyNum == t * 2 - 1) {
+        if (cur.keyNum == MAX_KEY_NUMS) {
             //分裂结点
             split(parent, cur, index);
         }
@@ -77,13 +90,13 @@ public class BTree<K extends Integer, V> {
     private void split(Node parent, Node cur, int index) {
         //当前结点是根节点，就要另外创建新的根节点，作为当前结点的父节点
         if (parent == null) {
-            parent = new Node(t);
+            parent = new Node(m);
             parent.isLeaf = false;
             parent.insertChild(cur, 0);
             root = parent;
         }
         //创建当前结点的右兄弟节点,并且将当前结点的一半关键字复制到兄弟节点中
-        Node rightBro = new Node(t);
+        Node rightBro = new Node(m);
         rightBro.isLeaf = cur.isLeaf;
         rightBro.keyNum = t - 1;
         System.arraycopy(cur.keys, t, rightBro.keys, 0, t - 1);
@@ -152,7 +165,7 @@ public class BTree<K extends Integer, V> {
             }
         }
         //判断是否需要合并结点
-        if (cur.keyNum < t - 1) {
+        if (cur.keyNum < MIN_KEY_NUMS) {
             //当前节点的节点数不足，需要借用其他结点的关键字或者合并两个节点
             balance(parent, cur, index);
         }
@@ -261,11 +274,14 @@ public class BTree<K extends Integer, V> {
          */
         Node[] children;
 
-        public Node(int t) {
-            this.t = t;
+        int m;
+
+        public Node(int m) {
+            this.t = m / 2;
+            this.m = m;
 //            this.keys = new int[t * 2 - 1];
-            this.keys = new Entry[t * 2 - 1];
-            this.children = new Node[t * 2];
+            this.keys = new Entry[m - 1];
+            this.children = new Node[m];
         }
 
         /**
