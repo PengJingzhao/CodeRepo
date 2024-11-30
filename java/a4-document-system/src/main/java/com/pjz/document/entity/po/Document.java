@@ -9,6 +9,14 @@ public class Document {
     private int availableCopies;  // 现存量
     private int totalCopies;      // 总库存量
 
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
     // 构造函数
     public Document(String documentId, String title, String author, int availableCopies, int totalCopies) {
         this.documentId = documentId;

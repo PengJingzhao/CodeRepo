@@ -63,8 +63,9 @@ public class BTree<K extends Integer, V> {
         while (i < cur.keyNum && cur.keys[i].key.compareTo(key) < 0) {
             i++;
         }
-        //若关键字已存在则直接退出插入
+        //若关键字已存在则直接覆盖
         if (cur.keys[i] != null && cur.keys[i].key.compareTo(key) == 0) {
+            cur.insertKey(key, val, i);
             return;
         }
         //如果是叶子节点，就可以插入了，如果是非叶子结点就要下移寻找
@@ -294,10 +295,15 @@ public class BTree<K extends Integer, V> {
             //在index处腾出空位
             System.arraycopy(keys, index, keys, index + 1, keyNum - index);
             //插入关键字
+            if (keys[index] != null && !(keys[index].key.compareTo(key) == 0)) {
+                //不是覆盖
+                //维护keyNum
+                keyNum++;
+            }else if (keys[index] == null) {
+                keyNum++;
+            }
 //            keys[index] = key;
             keys[index] = new Entry(key, val);
-            //维护keyNum
-            keyNum++;
         }
 
         /**

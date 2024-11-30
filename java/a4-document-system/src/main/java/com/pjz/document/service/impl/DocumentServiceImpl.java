@@ -3,9 +3,32 @@ package com.pjz.document.service.impl;
 import com.pjz.document.entity.po.Document;
 import com.pjz.document.service.DocumentService;
 
+import java.util.Date;
+
 public class DocumentServiceImpl implements DocumentService {
+
     @Override
-    public void addDocument(Document document) {
+    public void addDocument(String documentId, String title, String author, int quantity) {
+
+    }
+
+    @Override
+    public void removeDocument(String documentId) {
+
+    }
+
+    @Override
+    public boolean borrowDocument(String documentId, String borrowerId, Date returnDate) {
+        return false;
+    }
+
+    @Override
+    public boolean returnDocument(String documentId, String borrowerId) {
+        return false;
+    }
+
+    @Override
+    public void displayDocuments() {
 
     }
 }
