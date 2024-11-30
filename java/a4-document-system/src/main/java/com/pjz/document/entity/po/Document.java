@@ -6,8 +6,8 @@ public class Document {
     private String documentId;    // 文献号
     private String title;         // 文献名
     private String author;        // 著者
-    private int availableCopies;  // 现存量
-    private int totalCopies;      // 总库存量
+    private Integer availableCopies;  // 现存量
+    private Integer totalCopies;      // 总库存量
 
     public Integer getId() {
         return id;
@@ -77,5 +77,17 @@ public class Document {
                 ", availableCopies=" + availableCopies +
                 ", totalCopies=" + totalCopies +
                 '}';
+    }
+
+    public void merge(Document old) {
+        if (this.title == null) {
+            this.title = old.getTitle();
+        } else if (this.author == null) {
+            this.author = old.getAuthor();
+        } else if (this.availableCopies == null) {
+            this.availableCopies = old.getAvailableCopies();
+        } else if (this.totalCopies == null) {
+            this.totalCopies = old.getTotalCopies();
+        }
     }
 }

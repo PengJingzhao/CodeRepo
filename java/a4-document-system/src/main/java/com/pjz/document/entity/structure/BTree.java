@@ -233,6 +233,31 @@ public class BTree<K extends Integer, V> {
         }
     }
 
+    public V get(K key) {
+        return doGet(key, root);
+    }
+
+    private V doGet(K key, Node cur) {
+        int i = 0;
+        while (i < cur.keyNum && cur.keys[i].key.compareTo(key) < 0) {
+            i++;
+        }
+
+        //匹配成功
+        if (cur.keys[i] != null && cur.keys[i].key.compareTo(key) == 0) {
+            return (V) cur.keys[i].val;
+        }
+        //当前节点没找到，向下匹配
+        if (cur.isLeaf) {
+            //到叶子结点也没有找到
+            return null;
+        } else {
+            //非叶子节点
+            //下到子节点继续匹配
+            return doGet(key, cur.children[i]);
+        }
+    }
+
     static class Entry {
         Integer key;
         Object val;
@@ -299,7 +324,7 @@ public class BTree<K extends Integer, V> {
                 //不是覆盖
                 //维护keyNum
                 keyNum++;
-            }else if (keys[index] == null) {
+            } else if (keys[index] == null) {
                 keyNum++;
             }
 //            keys[index] = key;

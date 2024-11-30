@@ -16,7 +16,16 @@ public class DocumentMapper {
     }
 
     public static void updateDocument(Document document) {
+        //先找出原来存储的数据
+        Document old = bTree.get(document.getId());
+        //新旧数据合并一下
+        document.merge(old);
+        //覆盖旧数据
         bTree.insert(document.getId(), document);
+    }
+
+    public static Document getDocumentById(int id) {
+        return bTree.get(id);
     }
 
 }

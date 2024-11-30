@@ -7,15 +7,16 @@ public class DocumentApplication {
         BTree<Integer, String> bTree = new BTree<>(6);
         bTree.insert(1, "a");
         bTree.show();
-        bTree.insert(1, "b");
-//        for (int i = 0; i <= 100; i++) {
-//            bTree.insert(i, "hello" + i);
-//        }
+        bTree.insert(2, "b");
+        for (int i = 0; i <= 100; i++) {
+            bTree.insert(i, "hello" + i);
+        }
 //        bTree.show();
 //        for (int i = 0; i <= 99; i++) {
 //            bTree.delete(i);
 //        }
 //        bTree.delete(2);
-        bTree.show();
+//        bTree.show();
+        System.out.println(bTree.get(80));
     }
 }
