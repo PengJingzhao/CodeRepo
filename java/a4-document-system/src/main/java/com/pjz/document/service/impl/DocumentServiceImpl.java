@@ -52,6 +52,6 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     public void displayDocuments() {
-
+        documentMapper.display();
     }
 }

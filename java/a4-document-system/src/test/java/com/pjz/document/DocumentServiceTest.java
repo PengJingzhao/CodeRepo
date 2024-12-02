@@ -13,6 +13,8 @@ public class DocumentServiceTest {
         documentService.addDocument("a123456", "测试文献一", "用户1", 10);
         documentService.addDocument("a100001", "测试文献二", "用户2", 100);
 
+        //测试显示b树
+        documentService.displayDocuments();
     }
 
 }

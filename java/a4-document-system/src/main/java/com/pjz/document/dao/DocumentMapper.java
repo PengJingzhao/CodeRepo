@@ -28,4 +28,8 @@ public class DocumentMapper {
         return bTree.get(id);
     }
 
+    public void display() {
+        bTree.show();
+    }
+
 }
