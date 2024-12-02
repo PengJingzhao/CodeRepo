@@ -1,20 +1,16 @@
 package com.pjz.document.entity.structure;
 
-import org.w3c.dom.Node;
-
-import java.util.Arrays;
-
 public class BTree<K extends Comparable<K>, V> {
 
     /**
      * 阶数,最大子节点数，m=2*t
      */
-    private int m;
+    private final int m;
 
     /**
      * 最小度数，实际为m/2
      */
-    private int t;
+    private final int t;
 
     /**
      * b树的根节点

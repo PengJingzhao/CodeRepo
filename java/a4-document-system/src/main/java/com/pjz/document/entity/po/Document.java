@@ -6,8 +6,8 @@ public class Document {
     private String documentId;    // 文献号
     private String title;         // 文献名
     private String author;        // 著者
-    private Integer availableCopies;  // 现存量
-    private Integer totalCopies;      // 总库存量
+    private Integer availableCopies = 0;  // 现存量
+    private Integer totalCopies = 0;      // 总库存量
 
     public String getId() {
         return id;
@@ -15,6 +15,9 @@ public class Document {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public Document() {
     }
 
     // 构造函数
