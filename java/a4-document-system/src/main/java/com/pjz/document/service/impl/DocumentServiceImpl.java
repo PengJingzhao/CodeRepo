@@ -66,8 +66,16 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public boolean returnDocument(String documentId, String borrowerId) {
-        return false;
+    public boolean returnDocument(String documentId, String identityId) {
+        //注销借阅者
+        Document document = documentMapper.getDocumentById(documentId);
+        Borrower borrower = document.getBorrower(identityId);
+        if (borrower != null) {
+            document.removeBorrower(borrower);
+        }
+        document.setAvailableCopies(document.getAvailableCopies() + 1);
+        documentMapper.updateDocument(document);
+        return true;
     }
 
     @Override

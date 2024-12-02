@@ -2,6 +2,7 @@ package com.pjz.document.entity.po;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class Document {
     // 属性定义
@@ -114,5 +115,18 @@ public class Document {
      */
     public void addBorrower(Borrower borrower) {
         this.borrowers.add(borrower);
+    }
+
+    public Borrower getBorrower(String identityId) {
+        for (Borrower borrower : borrowers) {
+            if (borrower.getIdentityId().equals(identityId)) {
+                return borrower;
+            }
+        }
+        return null;
+    }
+
+    public void removeBorrower(Borrower borrower) {
+        this.borrowers.remove(borrower);
     }
 }
