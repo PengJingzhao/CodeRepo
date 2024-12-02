@@ -11,8 +11,8 @@ public class DocumentMapper {
         bTree.insert(document.getId(), document);
     }
 
-    public void deleteDocument(Document document) {
-        bTree.delete(document.getId());
+    public void deleteDocumentById(String documentId) {
+        bTree.delete(documentId);
     }
 
     public void updateDocument(Document document) {

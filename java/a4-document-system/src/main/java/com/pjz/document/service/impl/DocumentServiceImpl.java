@@ -36,12 +36,12 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public void removeDocument(String documentId) {
-
+    public void removeDocumentById(String documentId) {
+        documentMapper.deleteDocumentById(documentId);
     }
 
     @Override
-    public boolean borrowDocument(String documentId, String borrowerId, Date returnDate) {
+    public boolean borrowDocument(String documentId, String identityId, Date returnDate) {
         return false;
     }
 

@@ -19,16 +19,16 @@ public interface DocumentService {
      * 清除：某种文献己无保留价值，将它从系统中注销
      * @param documentId
      */
-    void removeDocument(String documentId);
+    void removeDocumentById(String documentId);
 
     /**
      * 借阅：如果一种文献的现存量大于零，则借出一本，登记借阅者的证件和归还期限
      * @param documentId
-     * @param borrowerId
+     * @param identityId 学号/工号
      * @param returnDate
      * @return
      */
-    boolean borrowDocument(String documentId, String borrowerId, Date returnDate);
+    boolean borrowDocument(String documentId, String identityId, Date returnDate);
 
     /**
      * 归还：注销对借阅者的登记，改变该文献的现存量
