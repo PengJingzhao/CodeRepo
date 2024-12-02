@@ -2,6 +2,7 @@ package com.pjz.document.service;
 
 import com.pjz.document.entity.po.Document;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 public interface DocumentService {
@@ -28,7 +29,7 @@ public interface DocumentService {
      * @param returnDate
      * @return
      */
-    boolean borrowDocument(String documentId, String identityId, Date returnDate);
+    boolean borrowDocument(String documentId, String identityId, LocalDateTime returnDate);
 
     /**
      * 归还：注销对借阅者的登记，改变该文献的现存量

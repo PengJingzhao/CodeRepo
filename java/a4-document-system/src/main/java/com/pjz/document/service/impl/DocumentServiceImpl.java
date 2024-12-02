@@ -1,9 +1,11 @@
 package com.pjz.document.service.impl;
 
 import com.pjz.document.dao.DocumentMapper;
+import com.pjz.document.entity.po.Borrower;
 import com.pjz.document.entity.po.Document;
 import com.pjz.document.service.DocumentService;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 public class DocumentServiceImpl implements DocumentService {
@@ -41,7 +43,25 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public boolean borrowDocument(String documentId, String identityId, Date returnDate) {
+    public boolean borrowDocument(String documentId, String identityId, LocalDateTime returnDate) {
+        //判断该文献是否存在
+        Document document = documentMapper.getDocumentById(documentId);
+        if (document == null) {
+            //文献不存在，借阅失败
+            return false;
+        }
+        //文献现存数量为零，借阅失败
+        if (document.getAvailableCopies() <= 0) {
+            return false;
+        }
+        //借阅成功，记录信息
+        document.setTotalCopies(document.getTotalCopies() - 1);
+        //更新数据
+        documentMapper.updateDocument(document);
+        //记录借阅人信息
+        Borrower borrower = new Borrower();
+        borrower.setIdentityId(identityId);
+        borrower.setReturnDate(returnDate);
         return false;
     }
 

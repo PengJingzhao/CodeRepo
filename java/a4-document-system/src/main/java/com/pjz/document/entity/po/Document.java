@@ -1,5 +1,8 @@
 package com.pjz.document.entity.po;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Document {
     // 属性定义
     private String id;//主键，用于建立索引，提升查找性能
@@ -8,6 +11,8 @@ public class Document {
     private String author;        // 著者
     private Integer availableCopies = 0;  // 现存量
     private Integer totalCopies = 0;      // 总库存量
+
+    private List<Borrower> borrowers = new ArrayList<Borrower>();//借阅人记录
 
     public String getId() {
         return id;
@@ -92,5 +97,22 @@ public class Document {
         } else if (this.totalCopies == null) {
             this.totalCopies = old.getTotalCopies();
         }
+    }
+
+    public List<Borrower> getBorrowers() {
+        return borrowers;
+    }
+
+    public void setBorrowers(List<Borrower> borrowers) {
+        this.borrowers = borrowers;
+    }
+
+    /**
+     * 添加借阅人
+     *
+     * @param borrower 借阅人
+     */
+    public void addBorrower(Borrower borrower) {
+        this.borrowers.add(borrower);
     }
 }
