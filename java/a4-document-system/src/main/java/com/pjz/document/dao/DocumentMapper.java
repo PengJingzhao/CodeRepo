@@ -5,7 +5,7 @@ import com.pjz.document.entity.structure.BTree;
 
 public class DocumentMapper {
 
-    private static BTree<Integer, Document> bTree = new BTree<>(6);
+    private static BTree<String, Document> bTree = new BTree<>(6);
 
     public static void addDocument(Document document) {
         bTree.insert(document.getId(), document);
@@ -24,7 +24,7 @@ public class DocumentMapper {
         bTree.insert(document.getId(), document);
     }
 
-    public static Document getDocumentById(int id) {
+    public static Document getDocumentById(String id) {
         return bTree.get(id);
     }
 

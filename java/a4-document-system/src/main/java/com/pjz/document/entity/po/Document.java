@@ -2,18 +2,18 @@ package com.pjz.document.entity.po;
 
 public class Document {
     // 属性定义
-    private Integer id;//主键，用于建立索引，提升查找性能
+    private String id;//主键，用于建立索引，提升查找性能
     private String documentId;    // 文献号
     private String title;         // 文献名
     private String author;        // 著者
     private Integer availableCopies;  // 现存量
     private Integer totalCopies;      // 总库存量
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 

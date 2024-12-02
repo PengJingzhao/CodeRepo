@@ -4,12 +4,12 @@ import com.pjz.document.entity.structure.BTree;
 
 public class DocumentApplication {
     public static void main(String[] args) {
-        BTree<Integer, String> bTree = new BTree<>(6);
-        bTree.insert(1, "a");
+        BTree<String, String> bTree = new BTree<>(6);
+        bTree.insert("a1", "a");
         bTree.show();
-        bTree.insert(2, "b");
+        bTree.insert("a2", "b");
         for (int i = 0; i <= 100; i++) {
-            bTree.insert(i, "hello" + i);
+            bTree.insert("a" + i, "hello" + i);
         }
 //        bTree.show();
 //        for (int i = 0; i <= 99; i++) {
@@ -17,6 +17,6 @@ public class DocumentApplication {
 //        }
 //        bTree.delete(2);
 //        bTree.show();
-        System.out.println(bTree.get(80));
+        System.out.println(bTree.get("a80"));
     }
 }

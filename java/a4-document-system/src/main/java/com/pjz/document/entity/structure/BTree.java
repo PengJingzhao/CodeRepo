@@ -4,7 +4,7 @@ import org.w3c.dom.Node;
 
 import java.util.Arrays;
 
-public class BTree<K extends Integer, V> {
+public class BTree<K extends Comparable<K>, V> {
 
     /**
      * 阶数,最大子节点数，m=2*t
@@ -19,7 +19,7 @@ public class BTree<K extends Integer, V> {
     /**
      * b树的根节点
      */
-    private Node root;
+    private Node<K,V> root;
 
     /**
      * 每个结点最多存储的关键字个数
@@ -34,7 +34,7 @@ public class BTree<K extends Integer, V> {
     public BTree(int m) {
         this.m = m;
         this.t = m / 2;
-        this.root = new Node(m);
+        this.root = new Node<>(m);
         this.MAX_KEY_NUMS = m - 1;
         //最小关键字数应该是对m/2-1向上取整
         this.MIN_KEY_NUMS = (int) Math.ceil((float) m / 2 - 1);
@@ -57,7 +57,7 @@ public class BTree<K extends Integer, V> {
      * @param index  分裂结点时的基准，也是当前结点位于父节点children数组中的位序
      * @param key    关键字
      */
-    private void doInsert(Node parent, Node cur, int index, K key, V val) {
+    private void doInsert(Node<K,V> parent, Node<K,V> cur, int index, K key, V val) {
         //寻找正确的插入位置
         int i = 0;
         while (i < cur.keyNum && cur.keys[i].key.compareTo(key) < 0) {
@@ -88,16 +88,16 @@ public class BTree<K extends Integer, V> {
      * @param cur    待分裂的节点
      * @param index  分裂的基准位置
      */
-    private void split(Node parent, Node cur, int index) {
+    private void split(Node<K,V> parent, Node<K,V> cur, int index) {
         //当前结点是根节点，就要另外创建新的根节点，作为当前结点的父节点
         if (parent == null) {
-            parent = new Node(m);
+            parent = new Node<>(m);
             parent.isLeaf = false;
             parent.insertChild(cur, 0);
             root = parent;
         }
         //创建当前结点的右兄弟节点,并且将当前结点的一半关键字复制到兄弟节点中
-        Node rightBro = new Node(m);
+        Node<K,V> rightBro = new Node<>(m);
         rightBro.isLeaf = cur.isLeaf;
         rightBro.keyNum = t - 1;
         System.arraycopy(cur.keys, t, rightBro.keys, 0, t - 1);
@@ -111,7 +111,7 @@ public class BTree<K extends Integer, V> {
         }
         cur.keyNum = t - 1;
         //更新父节点
-        Entry entry = cur.keys[t - 1];
+        Entry<K,V> entry = cur.keys[t - 1];
         parent.insertKey(entry.key, entry.val, index);
         parent.insertChild(rightBro, index + 1);
     }
@@ -121,7 +121,7 @@ public class BTree<K extends Integer, V> {
      *
      * @param key 要删除的关键字
      */
-    public void delete(int key) {
+    public void delete(K key) {
         doDelete(null, root, 0, key);
     }
 
@@ -133,7 +133,7 @@ public class BTree<K extends Integer, V> {
      * @param index  用于记录目标位置的基准位置
      * @param key    要删除的关键字
      */
-    private void doDelete(Node parent, Node cur, int index, int key) {
+    private void doDelete(Node<K,V> parent, Node<K,V> cur, int index, K key) {
         //首先要获取指定元素
         int i = 0;
         while (i < cur.keyNum && cur.keys[i].key.compareTo(key) < 0) {
@@ -153,11 +153,11 @@ public class BTree<K extends Integer, V> {
             if (cur.keys[i].key.compareTo(key) == 0) {
                 //在非叶子结点处匹配成功
                 //找到后驱节点并交换位置
-                Node child = cur.children[i + 1];
+                Node<K,V> child = cur.children[i + 1];
                 while (!child.isLeaf) {
                     child = child.children[0];
                 }
-                Entry nextKey = child.keys[0];
+                Entry<K,V> nextKey = child.keys[0];
                 cur.keys[i] = nextKey;
                 doDelete(cur, child, i + 1, nextKey.key);
             } else {
@@ -179,7 +179,7 @@ public class BTree<K extends Integer, V> {
      * @param cur    被调整节点
      * @param index  被调整节点在父结点中的孩子数组下标
      */
-    private void balance(Node parent, Node cur, int index) {
+    private void balance(Node<K,V> parent, Node<K,V> cur, int index) {
         if (cur == root) {
             if (cur.keyNum == 0 && cur.children[0] != null) {
                 root = cur.children[0];
@@ -187,12 +187,12 @@ public class BTree<K extends Integer, V> {
             return;
         }
         //通过在index两边的子节点之间迁移关键字来将关键字数量维持在合理范围内
-        Node leftChild = parent.leftSibling(index);
-        Node rightChild = parent.rightSibling(index);
+        Node<K,V> leftChild = parent.leftSibling(index);
+        Node<K,V> rightChild = parent.rightSibling(index);
         //向左兄弟借关键字
         if (leftChild != null && leftChild.keyNum > t - 1) {
             //将父结点中的key赋值给cur
-            Entry entry = parent.keys[index - 1];
+            Entry<K,V> entry = parent.keys[index - 1];
             cur.insertKey(entry.key, entry.val, 0);
             if (!leftChild.isLeaf) {
                 //如果左侧孩子不是一个叶子节点，在旋转过后，会导致keysNumber+1！=children。
@@ -205,7 +205,7 @@ public class BTree<K extends Integer, V> {
         }
         //向右兄弟借关键字
         if (rightChild != null && rightChild.keyNum > t) {
-            Entry entry = parent.keys[index];
+            Entry<K,V> entry = parent.keys[index];
             cur.insertKey(entry.key, entry.val, cur.keyNum);
             if (!rightChild.isLeaf) {
 
@@ -220,13 +220,13 @@ public class BTree<K extends Integer, V> {
             //将被删除节点从父结点上移除
             parent.removeChild(index);
             //将父结点的被移除节点的前驱节点移动到左兄弟上
-            Entry entry = parent.removeKey(index - 1);
+            Entry<K,V> entry = parent.removeKey(index - 1);
             leftChild.insertKey(entry.key, entry.val, leftChild.keyNum);
             cur.moveToTarget(leftChild);
         } else {
             //如果没有左兄弟，那么移除右兄弟节点，并将右兄弟移动到被删除节点上。
             parent.removeChild(index + 1);
-            Entry entry = parent.removeKey(index);
+            Entry<K,V> entry = parent.removeKey(index);
             cur.insertKey(entry.key, entry.val, cur.keyNum);
             assert rightChild != null;
             rightChild.moveToTarget(cur);
@@ -237,7 +237,7 @@ public class BTree<K extends Integer, V> {
         return doGet(key, root);
     }
 
-    private V doGet(K key, Node cur) {
+    private V doGet(K key, Node<K,V> cur) {
         int i = 0;
         while (i < cur.keyNum && cur.keys[i].key.compareTo(key) < 0) {
             i++;
@@ -258,11 +258,11 @@ public class BTree<K extends Integer, V> {
         }
     }
 
-    static class Entry {
-        Integer key;
-        Object val;
+    static class Entry<K extends Comparable<K>, V> {
+        K key;
+        V val;
 
-        public Entry(Integer key, Object val) {
+        public Entry(K key, V val) {
             this.key = key;
             this.val = val;
         }
@@ -273,7 +273,7 @@ public class BTree<K extends Integer, V> {
         }
     }
 
-    static class Node {
+    static class Node<K extends Comparable<K>, V> {
         /**
          * 是否为叶子结点，默认是
          */
@@ -293,12 +293,12 @@ public class BTree<K extends Integer, V> {
          * 关键字数组，底层存储关键字的地方,最大长度为2*t-1
          */
 //        int[] keys;
-        Entry[] keys;
+        Entry<K, V>[] keys;
 
         /**
          * 孩子节点数组,最大长度为2*t
          */
-        Node[] children;
+        Node<K,V>[] children;
 
         int m;
 
@@ -316,7 +316,7 @@ public class BTree<K extends Integer, V> {
          * @param key   关键字
          * @param index 目标位置
          */
-        public void insertKey(Integer key, Object val, int index) {
+        public void insertKey(K key, V val, int index) {
             //在index处腾出空位
             System.arraycopy(keys, index, keys, index + 1, keyNum - index);
             //插入关键字
@@ -328,7 +328,7 @@ public class BTree<K extends Integer, V> {
                 keyNum++;
             }
 //            keys[index] = key;
-            keys[index] = new Entry(key, val);
+            keys[index] = new Entry<K, V>(key, val);
         }
 
         /**
@@ -337,7 +337,7 @@ public class BTree<K extends Integer, V> {
          * @param child 新的子节点
          * @param index 插入位置
          */
-        void insertChild(Node child, int index) {
+        void insertChild(Node<K, V> child, int index) {
             System.arraycopy(children, index, children, index + 1, keyNum - index);
             children[index] = child;
         }
@@ -348,9 +348,9 @@ public class BTree<K extends Integer, V> {
          * @param index 指定位置
          * @return 被移除的关键字
          */
-        Entry removeKey(int index) {
+        Entry<K,V> removeKey(int index) {
 //            int key = keys[index];
-            Entry key = keys[index];
+            Entry<K,V> key = keys[index];
             System.arraycopy(keys, index + 1, keys, index, (keyNum - 1) - index);
 //            keys[keyNum] = -1000;
             keyNum--;
@@ -364,7 +364,7 @@ public class BTree<K extends Integer, V> {
          * @param index 指定的位置
          * @return 返回相应的左孩子结点
          */
-        Node leftSibling(int index) {
+        Node<K,V> leftSibling(int index) {
             if (index <= 0) {
                 return null;
             }
@@ -378,7 +378,7 @@ public class BTree<K extends Integer, V> {
          * @param index 获取指定位置的右孩子结点
          * @return 返回相应的右孩子结点
          */
-        Node rightSibling(int index) {
+        Node<K,V> rightSibling(int index) {
             if (index == keyNum) {
                 return null;
             }
@@ -391,19 +391,19 @@ public class BTree<K extends Integer, V> {
          *
          * @return 返回被移除的关键字
          */
-        Entry removeLeftmostKey() {
+        Entry<K,V> removeLeftmostKey() {
             return removeKey(0);
         }
 
         //移除最右边的元素
-        Entry removeRightmostKey() {
+        Entry<K,V> removeRightmostKey() {
             return removeKey(keyNum - 1);
         }
 
         //移除指定位置的孩子节点
-        Node removeChild(int index) {
+        Node<K,V> removeChild(int index) {
             //获取被移除的节点
-            Node t = children[index];
+            Node<K,V> t = children[index];
             //将被移除节点的后面元素向前移动一位
             System.arraycopy(children, index + 1, children, index, keyNum - index);
             //将之前最后一位的引用释放
@@ -413,22 +413,20 @@ public class BTree<K extends Integer, V> {
         }
 
         //移除最左边的孩子节点
-        Node removeLeftmostChild() {
+        Node<K,V> removeLeftmostChild() {
             return removeChild(0);
         }
 
         //移除最右边的孩子节点
-        Node removeRightmostChild() {
+        Node<K,V> removeRightmostChild() {
             return removeChild(keyNum);
         }
 
         //移动指定节点到目标节点
-        void moveToTarget(Node target) {
+        void moveToTarget(Node<K,V> target) {
             int start = target.keyNum;
             if (!isLeaf) {
-                for (int i = 0; i <= keyNum; i++) {
-                    target.children[start + i] = children[i];
-                }
+                if (keyNum + 1 >= 0) System.arraycopy(children, 0, target.children, start, keyNum + 1);
             }
             for (int i = 0; i < keyNum; i++) {
                 target.keys[target.keyNum++] = keys[i];
