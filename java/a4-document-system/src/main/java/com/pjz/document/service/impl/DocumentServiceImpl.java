@@ -55,14 +55,14 @@ public class DocumentServiceImpl implements DocumentService {
             return false;
         }
         //借阅成功，记录信息
-        document.setTotalCopies(document.getTotalCopies() - 1);
+        document.setAvailableCopies(document.getTotalCopies() - 1);
         //更新数据
         documentMapper.updateDocument(document);
         //记录借阅人信息
         Borrower borrower = new Borrower();
         borrower.setIdentityId(identityId);
         borrower.setReturnDate(returnDate);
-        return false;
+        return true;
     }
 
     @Override
