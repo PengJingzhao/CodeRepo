@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/file")
+@CrossOrigin
 public class FileUploadController {
 
     @Value("${upload.temp-dir}")
@@ -42,9 +43,9 @@ public class FileUploadController {
 
     @PostMapping("/chunkUpload")
     public String chunkUpload(
-            @RequestParam("chunk") MultipartFile chunk,
-            @RequestParam("fileIndex") Integer chunkIndex,
-            @RequestParam("fileHash") String fileHash) throws Exception {
+            @RequestPart("chunk") MultipartFile chunk,
+            @RequestPart("fileIndex") Integer chunkIndex,
+            @RequestPart("fileHash") String fileHash) throws Exception {
         //拼接父级目录
         String folderPath = tempDir + "/" + fileHash;
         File folder = new File(folderPath);

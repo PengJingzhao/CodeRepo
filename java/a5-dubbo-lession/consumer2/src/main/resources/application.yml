@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: consumer2
+dubbo:
+  application:
+    qos-enable: false
+  protocol:
+    serialization: kryo
+server:
+  port: 22002

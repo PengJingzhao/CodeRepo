@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="a2-datastructure1:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/a2_datastructure1_jar</output-path>
+    <root id="archive" name="a2-datastructure1.jar">
+      <element id="module-output" name="a2-datastructure1" />
+    </root>
+  </artifact>
+</component>

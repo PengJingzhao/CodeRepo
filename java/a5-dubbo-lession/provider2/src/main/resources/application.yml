@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: PROVIDER2
+dubbo:
+  protocol:
+    name: dubbo
+    port: -1
+    serialization: fastjson2
+server:
+  port: 22001

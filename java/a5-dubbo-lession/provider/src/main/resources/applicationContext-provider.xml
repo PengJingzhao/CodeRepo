@@ -1,0 +1,13 @@
+<!-- 配置 Dubbo 的服务提供者 -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+    <dubbo:application name="provider"/>
+
+    <dubbo:protocol name="dubbo" port="-1"/>
+
+    <bean id="userService" class="com.pjz.dubbo.service.UserServiceImpl"/>
+
+    <dubbo:service interface="com.pjz.dubbo.service.UserService" ref="userService"/>
+</beans>
